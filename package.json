@@ -1,24 +1,28 @@
 {
-  "name": "@antipodes-medical/NOM-DU-PACKAGE",
-  "version": "VERSION-DU-PACKAGE",
+  "name": "@antipodes-medical/flash-message",
+  "version": "0.1.0",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "./node_modules/.bin/eslint '**/*.js'",
-    "eslint:fix": "./node_modules/.bin/eslint '**/*.js' --fix"
+    "eslint": "./node_modules/.bin/eslint \"**/*.js\"",
+    "eslint:fix": "./node_modules/.bin/eslint \"**/*.js\" --fix"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antipodes-medical/NOM-DU-PACKAGE.git"
+    "url": "git+https://github.com/antipodes-medical/flash-message.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/antipodes-medical/NOM-DU-PACKAGE/issues"
+    "url": "https://github.com/antipodes-medical/flash-message/issues"
   },
-  "homepage": "https://github.com/antipodes-medical/NOM-DU-PACKAGE#readme",
+  "homepage": "https://github.com/antipodes-medical/flash-message#readme",
   "description": "",
   "devDependencies": {
     "@antipodes-medical/eslint-config-antipodes": "^1.0.5"
+  },
+  "dependencies": {
+    "@polymer/iron-icon": "^3.0.1",
+    "progressbar.js": "^1.1.0"
   }
 }
