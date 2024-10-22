@@ -1,7 +1,7 @@
 # Installation
 
 ```bash
-yarn add @antipodes-medical/flash-message -D
+yarn add @antipodes-medical/flash-message
 ```
 
 # Usage
