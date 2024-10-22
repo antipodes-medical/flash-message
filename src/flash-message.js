@@ -1,189 +1,134 @@
-import '@polymer/iron-icons/iron-icons.js';
-import ProgressBar from 'progressbar.js';
-
 class FlashMessage extends HTMLElement {
-
-	constructor() {
-		super();
-
-		this.inner = this.innerHTML;
-		this.innerHTML = '';
-	}
-
-	connectedCallback() {
-		this.attachShadow({ mode: 'open' });
-		this.shadowRoot.innerHTML = `
-      ${this._styles()}
-      ${this._html()}
-    `;
-		this._close(this.shadowRoot);
-		this._progressBar(this.shadowRoot);
-	}
-
-	/**
-   * Back to top styles.
-   *
-   * @private
-   */
-	_styles() {
-		return `
-      <style>
-        
-
-      .flash-message{
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all 0.5s ease;
-        z-index: 100;
-        width: fit-content;
-        margin-left: auto;
-        margin-right: auto;
+    constructor() {
+        super();
+        this.message = this.getAttribute("message");
+        this.time = this.getAttribute("time");
+        this.progressbar = this.getAttribute("progressbar");
     }
 
-    .flash-message__message{
-        padding: 10px;
-        border-radius: .2857rem;
-        align-items: center;
-        justify-content: space-around;
-        display: flex;
-        overflow: hidden;
+    connectedCallback() {
+        this.injectStyles();
+        this.render();
+
+        if (this.progressbar === "true") {
+            const progressBar = this.querySelector(".progress-bar");
+            progressBar.style.animationDuration = `${this.time / 1000}s`;
+            setTimeout(() => this.close(), this.time);
+        }
     }
 
-    .flash-message__text{
-        padding-right: 10px;
-        padding-left: 10px;
-        font-family: sans-serif;
+    injectStyles() {
+        if (!document.querySelector("#flash-message-styles")) {
+            const style = document.createElement("style");
+            style.id = "flash-message-styles";
+            style.textContent = `
+                .flash-message-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    background-color: #0f3d3e;
+                    color: #fff;
+                    padding: 10px;
+                    border-radius: 5px;
+                    font-family: Arial, sans-serif;
+                    position: relative;
+                    width: 300px;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                    overflow: hidden;
+                }
+
+                .flash-message-container .message {
+                    display: flex;
+                    align-items: center;
+                }
+
+                .flash-message-container .icon {
+                    margin-right: 10px;
+                }
+
+                .flash-message-container .icon svg {
+                    width: 20px;
+                    height: 20px;
+                    fill: #00f3ff;
+                }
+
+                .flash-message-container .close-btn {
+                    background: none;
+                    border: none;
+                    color: #00f3ff;
+                    font-size: 18px;
+                    cursor: pointer;
+                }
+
+                .flash-message-container .progress-bar {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    height: 3px;
+                    background-color: #00f3ff;
+                    width: 0; /* Initially hidden */
+                    animation: progress linear forwards;
+                }
+
+                @keyframes progress {
+                    from {
+                        width: 0;
+                    }
+                    to {
+                        width: 100%;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
 
-    .flash-message__message--ERROR{
-        background-color: #fd77a4;
-        color: white;
+    render() {
+        this.innerHTML = this._html();
     }
 
-    .flash-message__message--OK{
-        background-color: #00bf9a;
-        color: white;
-    }
-
-    .flash-message__message--WARNING{
-        background-color: #ff9f89;
-        color: white;
-    }
-
-    .flash-message__message--INFO{
-        background-color: #419ef9;
-        color: white;
-    }
-
-    .flash-message__close{
-        cursor: pointer;
-        opacity: 0;
-    }
-
-    .flash-message__close:hover{
-        transition : all 0.5s ease;
-    }
-
-    progressbar{
-        position: absolute;
-        bottom: -5px;
-    }
-
-      </style>
-    `;
-	}
-
-	/**
-   * Get message.
-   *
-   * @returns {string}
-   */
-	get message() {
-		return this.getAttribute('message');
-	}
-
-	/**
-   * Get type.
-   *
-   * @returns {string}
-   */
-	get type() {
-		return this.getAttribute('type');
-	}
-
-	/**
-   * Get type.
-   *
-   * @returns {string}
-   */
-	get time() {
-		return this.getAttribute('time');
-	}
-
-	/**
-   * Flash message element.
-   *
-   * @private
-   */
-	_html() {
-		return `
-      <div class="flash-message">
-            <div class="flash-message__message flash-message__message--${this.type}">
-                <iron-icon icon="check"></iron-icon>
-                <div class="flash-message__text">${this.message}</div>
-                <iron-icon class="flash-message__close" id="close" icon="close" style="opacity: 1;"></iron-icon>
+    _html() {
+        return `
+            <div class="flash-message-container">
+                <div class="message">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 21.5 0 12.5l2-2 7 7 13-13 2 2L9 21.5z"/>
+                        </svg>
+                    </div>
+                    <strong>${this.message}</strong>
+                </div>
+                <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+                ${this.progressbar === "true" ? `<div class="progress-bar"></div>` : ''}
             </div>
-            <progressbar></progressbar>
-        </div>
-    `;
-	}
+        `;
+    }
 
-	/**
-   * Close flash message.
-   *
-   * @private
-   */
-	_close($element) {
-		const closeButton = $element.querySelector('.flash-message__close');
-		const flashMessage = $element.querySelector('.flash-message');
+    static get observedAttributes() {
+        return ["message", "time", "progressbar"];
+    }
 
-		closeButton.addEventListener('click', () => {
-			flashMessage.style.opacity = 0;
-		});
+    attributeChangedCallback(name, oldValue, newValue) {
+        this[name] = newValue;
+        this.render();
+    }
 
-		function addStylesAfterDelay() {
-			flashMessage.style.opacity = 0;
-		}
-		setTimeout(addStylesAfterDelay, this.time);
-	}
+    disconnectedCallback() {
+        this.innerHTML = "";
+    }
 
-  
-	/**
-   * Progreesbar.
-   *
-   * @private
-   */
-	_progressBar($element) {
-		const ColorProgressBar = [];
-		ColorProgressBar['OK'] = '#008e72';
-		ColorProgressBar['ERROR'] = '#ff0056';
-		ColorProgressBar['WARNING'] = '#ff3000';
-		ColorProgressBar['INFO'] = '#0081ff';
+    close() {
+        this.remove();
+    }
 
-		const bar = new ProgressBar.Line($element.querySelector('progressbar'), {
-			strokeWidth: 1,
-			duration: this.time,
-			color: ColorProgressBar[this.type],
-			trailWidth: 0,
-			svgStyle: {width: '100%', height: '4px'}
-		});
-      
-		bar.animate(1.0);
-	}
+    open() {
+        this.render();
+    }
+
+    toggle() {
+        this.render();
+    }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-	customElements.define('antipodes-flash-message', FlashMessage);
-});
+// Register the custom element
+customElements.define("flash-message", FlashMessage);

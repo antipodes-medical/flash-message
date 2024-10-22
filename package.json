@@ -2,11 +2,6 @@
   "name": "@antipodes-medical/flash-message",
   "version": "1.0.0",
   "main": "src/flash-message.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "./node_modules/.bin/eslint \"**/*.js\"",
-    "eslint:fix": "./node_modules/.bin/eslint \"**/*.js\" --fix"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/antipodes-medical/flash-message.git"
@@ -17,12 +12,5 @@
     "url": "https://github.com/antipodes-medical/flash-message/issues"
   },
   "homepage": "https://github.com/antipodes-medical/flash-message#readme",
-  "description": "",
-  "devDependencies": {
-    "@antipodes-medical/eslint-config-antipodes": "^1.0.5"
-  },
-  "dependencies": {
-    "@polymer/iron-icon": "^3.0.1",
-    "progressbar.js": "^1.1.0"
-  }
+  "description": ""
 }
