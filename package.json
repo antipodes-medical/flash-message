@@ -1,6 +1,6 @@
 {
   "name": "@antipodes-medical/flash-message",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "main": "src/flash-message.js",
   "repository": {
     "type": "git",
@@ -12,5 +12,12 @@
     "url": "https://github.com/antipodes-medical/flash-message/issues"
   },
   "homepage": "https://github.com/antipodes-medical/flash-message#readme",
-  "description": ""
+  "description": "Bandeau de confirmation <flash-message> : web component sans dépendance (remplace kami-flash).",
+  "keywords": [
+    "web-component",
+    "custom-element",
+    "flash",
+    "toast",
+    "notification"
+  ]
 }
