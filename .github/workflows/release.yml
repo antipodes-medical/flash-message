@@ -1,24 +1,47 @@
 name: Publish the package to NPM
 
+# Publication par « trusted publishing » npm (OIDC) : aucun jeton npm stocké dans
+# GitHub. Le package autorise ce dépôt + ce fichier (release.yml) dans ses réglages
+# npmjs.com (Settings > Trusted Publisher). Renommer ce fichier casse la publication.
+
 on:
-  release:
-    types: [created]
+  # Après « Create a Release » (push sur master avec une nouvelle version).
   workflow_run:
     workflows: ["Create a Release"]
     types:
       - completed
+  # Bouton « Run workflow » dans l'onglet Actions (republier une version ratée).
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
-  build:
+  publish:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+
+      # Node 24 : npm >= 11.5.1, requis pour le trusted publishing.
+      - uses: actions/setup-node@v4
         with:
-          node-version: "12.x"
+          node-version: "24.x"
           registry-url: "https://registry.npmjs.org"
-      - run: npm install
-      - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Version déjà publiée (push sans changement de version) : rien à faire.
+      - name: Check version
+        id: version
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$NAME@$VERSION est déjà sur npm."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: ${{ steps.version.outputs.publish == 'true' }}
+        run: npm publish --access public
